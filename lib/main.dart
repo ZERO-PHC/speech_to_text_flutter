@@ -1,79 +1,56 @@
-import 'dart:convert';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:learning/constant.dart';
-import 'package:http/http.dart' as http;
 
-void main() => runApp(MaterialApp(
-      home: MyApp(),
-    ));
+import 'package:learning/UI/interactions_ui.dart';
+import 'package:learning/UI/professionals_chat.dart';
+import 'package:learning/chatbot_ui.dart';
+import 'package:learning/models/general_model.dart';
+import 'package:learning/project_ui.dart';
+import 'package:learning/projects_page.dart';
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+import 'package:provider/provider.dart';
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
+import 'UI/create_interaction.dart';
+import 'UI/create_project.dart';
 
-class _MyAppState extends State<MyApp> {
-  var text = "123";
-
-  Future<String> convertSpeechToText(String filePath) async {
-    const apiKey = apiSecretKey;
-    var url = Uri.https("api.openai.com", "v1/audio/transcriptions");
-    var request = http.MultipartRequest('POST', url);
-    request.headers.addAll(({"Authorization": "Bearer $apiKey"}));
-    request.fields["model"] = 'whisper-1';
-    request.fields["language"] = "en";
-    request.files.add(await http.MultipartFile.fromPath('file', filePath));
-    var response = await request.send();
-    var newresponse = await http.Response.fromStream(response);
-    final responseData = json.decode(newresponse.body);
-
-    return responseData['text'];
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("ChatGPT Flutter"),
-      ),
-      body: content(),
-    );
-  }
-
-  Widget content() {
-    return Container(
-      width: double.infinity,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-              child: ElevatedButton(
-            onPressed: () async {
-              FilePickerResult? result = await FilePicker.platform.pickFiles();
-              if (result != null) {
-                //call openai's transcription api
-                convertSpeechToText(result.files.single.path!).then((value) {
-                  setState(() {
-                    text = value;
-                  });
-                });
-              }
-            },
-            child: Text(" Pick File "),
-          )),
-          SizedBox(
-            height: 20,
+void main() {
+  runApp(ChangeNotifierProvider(
+    create: (context) => GeneralModel(),
+    child: MaterialApp(
+        // remove debug banner
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          canvasColor: Color.fromARGB(255, 247, 247, 247),
+          primaryColor: Colors.black,
+          textTheme: TextTheme(
+            headline1: TextStyle(
+              fontSize: 72.0,
+              fontWeight: FontWeight.bold,
+            ),
+            headline6: TextStyle(
+                fontSize: 24.0,
+                // fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold),
+            bodyText2: TextStyle(
+              fontSize: 14.0,
+              fontFamily: 'Hind',
+            ),
           ),
-          Text(
-            "Speech to Text : " + text,
-            style: TextStyle(fontSize: 20),
-          )
-        ],
-      ),
-    );
-  }
+        ),
+        routes: {
+          '/': (context) => ChatBotPage(),
+          // '/projects': (context) => Projects(),
+          // '/create_project': (context) => CreateProjectUI(),
+          // '/project': (context) {
+          //   final Map<String, String> arguments = ModalRoute.of(context)!
+          //       .settings
+          //       .arguments as Map<String, String>;
+          //   return ProjectUI(project: arguments);
+          // },
+          '/create_interaction': (context) => CreateInteractionUI(),
+          // '/interactions': (context) => InteractionsUI(),
+          '/pros': (context) => ProfessionalsChat(),
+        }),
+  ));
+  // runApp(MaterialApp(home: MyApp()));
 }

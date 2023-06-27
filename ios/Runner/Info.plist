@@ -60,5 +60,15 @@
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This sample uses the microphone to record your speech and convert it to text.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+	<string>audio</string>
+	<string> NSPhotoLibraryUsageDescription </string>
+	<string> NSCameraUsageDescription </string>
+</array>
 </dict>
 </plist>
